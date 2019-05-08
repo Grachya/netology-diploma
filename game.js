@@ -74,3 +74,56 @@ class Actor {
         }
     }
 }
+
+class Level {
+    constructor(grid = [], actors = []) {
+        this.grid = grid;
+        this.actors = actors;
+        //TODO возможно что это не нулевой элемент, а нужно искать через find и instanseof Player;
+        this.player = actors[0];
+        this.height = grid.length ;
+        this.width = this._getGridWidth(grid);
+        this.status = null;
+        this.finishDelay = 1;
+    }
+
+    _getGridWidth(grid){
+        if(!grid.length) {
+            return 0;
+        }
+        let longestGrid = grid.reduce((acc, next) => {
+            return acc.length < next.length ?  next : acc;
+        }, [])
+
+        return longestGrid.length;
+    }
+
+    isFinished() {
+        if(this.status && this.finishDelay < 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    actorAt(actor) {
+        if(!actor || !(actor instanceof Actor)) {
+            throw new Error('В метод actorAt передан не верный объект!');
+        }
+
+        const intersectedActor = this.actors.filter(item => actor.isIntersect(item));
+        if(intersectedActor.length) {
+            return intersectedActor[0];
+        } else {
+            return undefined;
+        }
+    }  
+    
+    // препятствие на
+    obstacleAt(position, size) {
+        if(!(position instanceof Vector) || !(size instanceof Vector)) {
+            throw new Error('В метод obstacleAt передан(ы) не верны(й/е) объект(ы)!');
+        }
+
+    }
+}

@@ -60,26 +60,17 @@ class Actor {
             return false;
         }
 
+        // Объект равен объекту (лежит один в один)
         if(actor.top === this.top && actor.left === this.left && actor.bottom === this.bottom && actor.right === this.right) {
             return true;
+        // Объект пересекается с объектом, который полностью содержится в нём
         } else if(actor.top > this.top && actor.left > this.left && actor.bottom < this.bottom && actor.right < this.right) {
+            return true;
+        // Объект пересекается с объектом, который частично содержится в нём
+        } else if(actor.right > this.left && actor.left < this.right && actor.bottom > this.top && actor.top < this.bottom) {
             return true;
         } else {
             return false;
         }
-
-        // if(actor.left > this.right || actor.right < this.left || actor.top < this.bottom || actor.bottom > this.top) {
-        //     return false;
-        // } else if(actor.top === this.top && actor.left === this.left && actor.bottom === this.bottom && actor.right === this.right) {
-        //     return true;
-        // } else {
-        //     return true;
-        // }
     }
 }
-
-
-// bool Intersects(Rectangle r1, Rectangle r2){
-//     if(r1.left > r2.right || r1.right < r2.left || r1.top < r2.bottom || r1.bottom > r2.top) return false;
-//     return true;
-//   }

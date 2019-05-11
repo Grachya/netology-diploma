@@ -125,24 +125,68 @@ class Level {
             throw new Error('В метод obstacleAt передан(ы) не верны(й/е) объект(ы)!');
         }
 
-        if(Math.floor(position.x) === 0 && Math.floor(position.y) === 0) {
-            return this.grid[0][0];
-        }
+        const actor = new Actor(position, size);
 
-        if(position.x < 0) {
+        if(actor.top < 0) {
             return 'wall';
         }
 
-        if(position.y >= this.height) {
+        if(actor.left < 0) {
+            return 'wall';
+        }
+
+        if(actor.right >= this.width) {
+            return 'wall';
+        }
+
+        if(actor.bottom >= this.height) {
             return 'lava';
         }
 
-        if(position.y < 0) {
-            return 'wall';
+        for(let y = Math.floor(actor.top); y < Math.ceil(actor.bottom); y++) {
+            for(let x = Math.floor(actor.left); x < Math.ceil(actor.right); x++) {
+                const cell = this.grid[y][x];
+                // тут проверяем, что в ячейке нет препятствия
+                if(cell) {
+                    return cell;
+                } else {
+                    return undefined;
+                }
+            }
+        }
+    }
+
+    removeActor(actor) {
+        this.actors.forEach((item, i) => {
+            if(item === actor) {
+                this.actors.splice(i, 1);
+            }
+        } )
+    }
+
+    noMoreActors(actorType) {
+        const findedActor = this.actors.find(item => item.type === actorType);
+        if(findedActor) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    playerTouched(type, actor = new Actor()) {
+        if(this.status) {
+            return;
         }
 
-        if(position.x >= this.width) {
-            return 'wall'
+        if(type==='lava' || type==='fireball'){
+            this.status = 'lost';
+        }
+
+        if(type==='coin'){
+            this.removeActor(actor);
+            if(this.noMoreActors(type)){
+                this.status = 'won';
+            }
         }
     }
 }

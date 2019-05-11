@@ -125,5 +125,24 @@ class Level {
             throw new Error('В метод obstacleAt передан(ы) не верны(й/е) объект(ы)!');
         }
 
+        if(Math.floor(position.x) === 0 && Math.floor(position.y) === 0) {
+            return this.grid[0][0];
+        }
+
+        if(position.x < 0) {
+            return 'wall';
+        }
+
+        if(position.y >= this.height) {
+            return 'lava';
+        }
+
+        if(position.y < 0) {
+            return 'wall';
+        }
+
+        if(position.x >= this.width) {
+            return 'wall'
+        }
     }
 }

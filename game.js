@@ -3,11 +3,23 @@
 const OBSTACLE_TYPES = {
   WALL: 'wall',
   LAVA: 'lava',
+  COIN: 'coin',
+  FIREBALL: 'fireball'
 }
 
 const ACTOR_TYPES = {
   PLAYER: 'player',
   ACTOR: 'actor',
+}
+
+const GAME_STATUS = {
+  LOST: 'lost',
+  WON: 'won',
+}
+
+const SYMBOL_TYPES = {
+  WALL: 'x',
+  LAVA: '!',
 }
 
 class Vector {
@@ -55,7 +67,6 @@ class Actor {
     return this.pos.y + this.size.y;
   }
   get type() {
-    // TODO вынести в константу
     return ACTOR_TYPES.ACTOR;
   }
 
@@ -80,6 +91,10 @@ class Actor {
     } else {
       return false;
     }
+  }
+
+  static isActor(obj) {
+    return obj instanceof Actor;
   }
 }
 
@@ -170,16 +185,95 @@ class Level {
       return;
     }
 
-    if (type === 'lava' || type === 'fireball') {
-      this.status = 'lost';
+    if (type === OBSTACLE_TYPES.LAVA || type === OBSTACLE_TYPES.FIREBALL) {
+      this.status = GAME_STATUS.LOST;
     }
 
-    if (type === 'coin') {
+    if (type === OBSTACLE_TYPES.COIN) {
       this.removeActor(actor);
       if (this.noMoreActors(type)) {
-        this.status = 'won';
+        this.status = GAME_STATUS.WON;
       }
     }
+  }
+}
+
+class LevelParser {
+  constructor(dictionary) {
+    this.dictionary = dictionary;
+  }
+
+  actorFromSymbol(symbol) {
+    if(symbol) {
+      return this.dictionary[symbol];
+    }
+  }
+
+  obstacleFromSymbol(symbol) {
+    if(symbol === SYMBOL_TYPES.WALL){
+      return OBSTACLE_TYPES.WALL;
+    } else if (symbol === SYMBOL_TYPES.LAVA) {
+      return OBSTACLE_TYPES.LAVA
+    }
+  }
+
+  createGrid(gridArray) {
+    if(!gridArray.length) {
+      return [];
+    }
+
+    const grid = gridArray.map(item => {
+      const transformedGrid = item.split('');
+
+      return transformedGrid.map(item => {
+        if(item === SYMBOL_TYPES.WALL) {
+          return OBSTACLE_TYPES.WALL;
+        } else if(item === SYMBOL_TYPES.LAVA) {
+          return OBSTACLE_TYPES.LAVA;
+        } else {
+          return undefined;
+        }
+      })
+
+    });
+
+    return grid;
+  }
+
+  createActors(actorsArray) {
+    if(!actorsArray.length || !this.dictionary) {
+      return [];
+    }
+
+    const actors = actorsArray.map((item, i) => {
+      const splited = item.split('');
+
+      const transformed = splited.map((actor, k) => {
+        let createdActor;
+
+        if(this.dictionary[actor] && typeof this.dictionary[actor] === 'function') {
+          createdActor = new this.dictionary[actor](new Vector(k, i));
+        }
+
+        const isValidActor = createdActor && Actor.isActor(createdActor);
+        
+        if(isValidActor) {
+          return createdActor;
+        }
+      })
+
+      const filtered = transformed.filter(item => item);
+
+      return filtered;
+    })
+
+    return [].concat(...actors);
+  }
+
+  parse(obstacleArray) {
+    const actorsArray = this.createActors(obstacleArray)
+    const gridArray = this.createGrid(obstacleArray)
+    return new Level(gridArray, actorsArray);
   }
 }
 

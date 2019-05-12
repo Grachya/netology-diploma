@@ -184,7 +184,7 @@ class Level {
 }
 
 class Player extends Actor {
-  constructor(position = new Ve) {
+  constructor(position = new Vector()) {
     const playerPosition = position.plus(new Vector(0, -0.5));
     super(playerPosition, new Vector(0.8, 1.5))
   }

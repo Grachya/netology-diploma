@@ -3,13 +3,13 @@
 const OBSTACLE_TYPES = {
   WALL: 'wall',
   LAVA: 'lava',
-  COIN: 'coin',
 }
 
 const ACTOR_TYPES = {
   PLAYER: 'player',
   ACTOR: 'actor',
   FIREBALL: 'fireball',
+  COIN: 'coin',
 }
 
 const GAME_STATUS = {
@@ -189,7 +189,7 @@ class Level {
       this.status = GAME_STATUS.LOST;
     }
 
-    if (type === OBSTACLE_TYPES.COIN) {
+    if (type === ACTOR_TYPES.COIN) {
       this.removeActor(actor);
       if (this.noMoreActors(type)) {
         this.status = GAME_STATUS.WON;
@@ -338,6 +338,23 @@ class FireRain extends Fireball {
   }
   handleObstacle () {
     this.pos = this.initPosition;
+  }
+}
+
+class Coin extends Actor {
+  constructor(position) {
+    super(position, new Vector(0.6, 0.6));
+    this.pos = this.pos.plus(new Vector(.2, .1))
+    this.springSpeed = 8;
+    this.springDist = 0.07
+  }
+
+  get spring () {
+    return Math.floor(Math.random() * 2*Math.PI) + 0
+  }
+
+  get type() {
+    return ACTOR_TYPES.COIN;
   }
 }
 

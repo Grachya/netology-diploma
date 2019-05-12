@@ -4,12 +4,12 @@ const OBSTACLE_TYPES = {
   WALL: 'wall',
   LAVA: 'lava',
   COIN: 'coin',
-  FIREBALL: 'fireball'
 }
 
 const ACTOR_TYPES = {
   PLAYER: 'player',
   ACTOR: 'actor',
+  FIREBALL: 'fireball',
 }
 
 const GAME_STATUS = {
@@ -185,7 +185,7 @@ class Level {
       return;
     }
 
-    if (type === OBSTACLE_TYPES.LAVA || type === OBSTACLE_TYPES.FIREBALL) {
+    if (type === OBSTACLE_TYPES.LAVA || type === ACTOR_TYPES.FIREBALL) {
       this.status = GAME_STATUS.LOST;
     }
 
@@ -274,6 +274,48 @@ class LevelParser {
     const actorsArray = this.createActors(obstacleArray)
     const gridArray = this.createGrid(obstacleArray)
     return new Level(gridArray, actorsArray);
+  }
+}
+
+class Fireball extends Actor {
+  constructor(position, speed) {
+    super(position, undefined, speed)
+    this.size = new Vector(1,1);
+  }
+
+  get type () {
+    return ACTOR_TYPES.FIREBALL;
+  }
+
+  get isSpeedZero () {
+    return this.speed.x === 0 && this.speed.y === 0;
+  }
+
+  getNextPosition(time = 1) {
+    if(this.isSpeedZero) {
+      return this.pos;
+    }
+
+    if(time) {
+      let newSpeed = new Vector(this.speed.x, this.speed.y)
+      newSpeed = newSpeed.times(time);
+      return this.pos.plus(newSpeed);
+    }
+    return this.pos.plus(this.speed);
+  }
+
+  handleObstacle() {
+    this.speed = new Vector(this.speed.x * -1, this.speed.y * -1);
+  }
+
+  act(time, grid) {
+    const nextPosition = this.getNextPosition(time);
+    const isIntersectObstacle = grid.obstacleAt(nextPosition, this.size);
+    if(!isIntersectObstacle) {
+      this.pos = nextPosition;
+    } else {
+      this.handleObstacle();
+    }
   }
 }
 

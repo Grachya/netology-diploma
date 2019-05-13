@@ -403,3 +403,7 @@ levels.then((levels) => {
   runGame(JSON.parse(levels), parser, DOMDisplay)
   .then(() => console.log('Вы выиграли приз!'));
 })
+
+
+
+

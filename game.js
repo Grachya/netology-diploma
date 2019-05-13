@@ -386,3 +386,20 @@ class Player extends Actor {
     return ACTOR_TYPES.PLAYER;
   }
 }
+
+const actorDict = {
+  '@': Player,
+  'v': FireRain,
+  'o': Coin,
+  '=': HorizontalFireball,
+  '|': VerticalFireball,
+}
+
+const parser = new LevelParser(actorDict);
+
+const levels = loadLevels();
+levels.then((levels) => {
+  console.log(JSON.parse(levels));
+  runGame(JSON.parse(levels), parser, DOMDisplay)
+  .then(() => console.log('Вы выиграли приз!'));
+})

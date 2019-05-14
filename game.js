@@ -102,8 +102,7 @@ class Level {
   constructor(grid = [], actors = []) {
     this.grid = grid;
     this.actors = actors;
-    //TODO возможно что это не нулевой элемент, а нужно искать через find и instanseof Player;
-    this.player = actors[0];
+    this.player =  this.actors.find(actor => actor.type === ACTOR_TYPES.PLAYER);
     this.height = grid.length;
     this.status = null;
     this.finishDelay = 1;
@@ -139,7 +138,6 @@ class Level {
       return OBSTACLE_TYPES.WALL;
     }
 
-    // TODO возможно >=
     if (actor.bottom > this.height - 1) {
       return OBSTACLE_TYPES.LAVA;
     }
